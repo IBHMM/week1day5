@@ -1,0 +1,32 @@
+name: Pull Notificatin
+
+on:
+    push:
+        branches: 
+            -main
+            -dev
+            -test
+            -dev-*
+    pull_request:
+        types: [opened, closed, synchronize, reopened]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send email notification
+        uses: dawidd6/action-send-mail@v3
+        with:
+           server_address: smtp.gmail.com
+           server_port: 465
+           from: ${{ secrets.MAIL_FROM }}
+           to: ${{ secrets.MAIL_TO }}
+           username: ${{ secrets.MAIL_USERNAME }}
+           password: ${{ secrets.MAIL_PASSWORD }}
+           subject: ${{github.event.name}} Notification
+           body: |
+            There have been a new ${{github.event.name}} in the repository
+            Repository : ${{github.repository}}
+            Branch     : ${{github.ref}}
+            Action by  : ${{github.actor}}
+            Action     : ${{github.event.action}}
